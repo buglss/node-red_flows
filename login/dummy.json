@@ -1,0 +1,457 @@
+[
+    {
+        "id": "5873ddfaaffdc360",
+        "type": "group",
+        "z": "60cd56e29d46ec42",
+        "name": "POST /login",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "afdf1158eede9a15",
+            "540d9b08fde98948",
+            "a223202f5053106f",
+            "39977aa80409a09d",
+            "0dacba82d0b38aa3",
+            "941a4eec3266c2e6",
+            "545afe3f5a030c5e",
+            "8f330f3561e6066f",
+            "95ac594b66759ba1",
+            "b8b6fe1db655b608",
+            "54b2212132f8363c",
+            "325e396bb192862b",
+            "8027a5d239bad2da",
+            "f0ac4c4c37c27203",
+            "015e60d369cbbcdd",
+            "beed840f0db5e8da",
+            "9cdce810aed1630e",
+            "bcd9a8a7592a99fe"
+        ],
+        "x": 54,
+        "y": 559,
+        "w": 1032,
+        "h": 242
+    },
+    {
+        "id": "afdf1158eede9a15",
+        "type": "http request",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "/login",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/login",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 350,
+        "y": 680,
+        "wires": [
+            [
+                "a223202f5053106f"
+            ]
+        ]
+    },
+    {
+        "id": "540d9b08fde98948",
+        "type": "inject",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "1 Günlük Token",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"unameOrEmail\":\"superUser\",\"password\":\"1q2w3e4r5t6y7u\"}",
+        "payloadType": "json",
+        "x": 180,
+        "y": 680,
+        "wires": [
+            [
+                "afdf1158eede9a15"
+            ]
+        ]
+    },
+    {
+        "id": "a223202f5053106f",
+        "type": "debug",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "1 Günlük Token",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "39977aa80409a09d",
+        "type": "inject",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "Insert",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[{\"username\":\"superUser\",\"displayName\":\"Üst Yetkili Kullanıcı\",\"email\":\"\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"superUser\"]},{\"username\":\"admin\",\"displayName\":\"Yetkili Kullanıcı\",\"email\":\"\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"admin\"]},{\"username\":\"student\",\"displayName\":\"Öğrenci Kullanıcı\",\"email\":\"\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"student\"]},{\"username\":\"teacher\",\"displayName\":\"Öğretmen Kullanıcı\",\"email\":\"\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"teacher\"]},{\"username\":\"forgot\",\"displayName\":\"Unutkan Öğrenci Kullanıcı\",\"email\":\"\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"student\"]}]",
+        "payloadType": "json",
+        "x": 150,
+        "y": 600,
+        "wires": [
+            [
+                "54b2212132f8363c"
+            ]
+        ]
+    },
+    {
+        "id": "0dacba82d0b38aa3",
+        "type": "mongodb4",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "clientNode": "da6360c8f119cb98",
+        "mode": "collection",
+        "collection": "Users",
+        "operation": "updateOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 730,
+        "y": 600,
+        "wires": [
+            [
+                "941a4eec3266c2e6"
+            ]
+        ]
+    },
+    {
+        "id": "941a4eec3266c2e6",
+        "type": "debug",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "Insert Data Of Users",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 940,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "545afe3f5a030c5e",
+        "type": "inject",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "Flush",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "x": 150,
+        "y": 640,
+        "wires": [
+            [
+                "8f330f3561e6066f"
+            ]
+        ]
+    },
+    {
+        "id": "8f330f3561e6066f",
+        "type": "mongodb4",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "clientNode": "da6360c8f119cb98",
+        "mode": "collection",
+        "collection": "Users",
+        "operation": "deleteMany",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 310,
+        "y": 640,
+        "wires": [
+            [
+                "95ac594b66759ba1"
+            ]
+        ]
+    },
+    {
+        "id": "95ac594b66759ba1",
+        "type": "debug",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "Flush Users",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 490,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "b8b6fe1db655b608",
+        "type": "bcrypt",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "",
+        "action": "encrypt",
+        "field": "payload.password",
+        "hash": "payload",
+        "target": "payload",
+        "assignment": "replace",
+        "match": "match",
+        "outputs": 1,
+        "rounds": 10,
+        "x": 430,
+        "y": 600,
+        "wires": [
+            [
+                "325e396bb192862b"
+            ]
+        ]
+    },
+    {
+        "id": "54b2212132f8363c",
+        "type": "split",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 290,
+        "y": 600,
+        "wires": [
+            [
+                "b8b6fe1db655b608"
+            ]
+        ]
+    },
+    {
+        "id": "325e396bb192862b",
+        "type": "function",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "query",
+        "func": "let stamp = {\n    createAt: new Date(),\n    username: \"system.user\",\n    email: \"\",\n    displayName: \"Sistem Kullanıcısı\",\n    ip: \"127.0.0.1\"\n}\nlet auth = [\n    {\n        name: \"system.user\",\n        access: [\"r\", \"w\"]\n    }\n]\nmsg.payload = [\n    {\n        username: msg.payload.username\n    },\n    {\n        $set: {...msg.payload, stamp, auth}\n    },\n    {\n        upsert: true\n    }\n]\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 600,
+        "wires": [
+            [
+                "0dacba82d0b38aa3"
+            ]
+        ]
+    },
+    {
+        "id": "8027a5d239bad2da",
+        "type": "http request",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "/login",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/login",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 350,
+        "y": 720,
+        "wires": [
+            [
+                "015e60d369cbbcdd"
+            ]
+        ]
+    },
+    {
+        "id": "f0ac4c4c37c27203",
+        "type": "inject",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "1 Haftalık Token",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"unameOrEmail\":\"superUser\",\"password\":\"1q2w3e4r5t6y7u\",\"rememberMe\":true}",
+        "payloadType": "json",
+        "x": 180,
+        "y": 720,
+        "wires": [
+            [
+                "8027a5d239bad2da"
+            ]
+        ]
+    },
+    {
+        "id": "015e60d369cbbcdd",
+        "type": "debug",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "1 Haftalık Token",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "beed840f0db5e8da",
+        "type": "inject",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "1 Günlük Token",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"unameOrEmail\":\"forgot\",\"password\":\"q1w2e3r4t5y6u7\"}",
+        "payloadType": "json",
+        "x": 180,
+        "y": 760,
+        "wires": [
+            [
+                "9cdce810aed1630e"
+            ]
+        ]
+    },
+    {
+        "id": "9cdce810aed1630e",
+        "type": "http request",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "/login",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/login",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 350,
+        "y": 760,
+        "wires": [
+            [
+                "bcd9a8a7592a99fe"
+            ]
+        ]
+    },
+    {
+        "id": "bcd9a8a7592a99fe",
+        "type": "debug",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "1 Günlük Token",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "da6360c8f119cb98",
+        "type": "mongodb4-client",
+        "name": "Paperx DB",
+        "protocol": "mongodb",
+        "hostname": "localhost",
+        "port": "27017",
+        "dbName": "paperx",
+        "authSource": "",
+        "authMechanism": "DEFAULT",
+        "tls": false,
+        "tlsCAFile": "",
+        "tlsInsecure": false,
+        "uri": "",
+        "advanced": "",
+        "uriTabActive": "tab-uri-simple"
+    }
+]

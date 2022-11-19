@@ -1,0 +1,346 @@
+[
+    {
+        "id": "416967cbd719dd16",
+        "type": "group",
+        "z": "60cd56e29d46ec42",
+        "name": "POST /whoami",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "b8c5d9e157f77ff1",
+            "bfe4bcdab79c8c13",
+            "4b99fdac4e567a0c",
+            "221de00df3a09428",
+            "3b98948d2f7c762c",
+            "6069e6a036a1b6fb",
+            "b3d1e351725bac2e",
+            "2ba5747d62fbabe8"
+        ],
+        "x": 54,
+        "y": 399,
+        "w": 852,
+        "h": 122
+    },
+    {
+        "id": "ce1bcc6514ed113f",
+        "type": "subflow",
+        "name": "JWT Sign",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 180,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "ff3dba8d6e7d5cce"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 560,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "59283f81b0468ed7",
+                        "port": 0
+                    },
+                    {
+                        "id": "ab61e7f6bb965e65",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#C0DEED",
+        "icon": "font-awesome/fa-hashtag",
+        "status": {
+            "x": 320,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "f2006b4ad0770cdf",
+                    "port": 0
+                }
+            ]
+        }
+    },
+    {
+        "id": "59283f81b0468ed7",
+        "type": "jwt sign",
+        "z": "ce1bcc6514ed113f",
+        "name": "1 Gün",
+        "alg": "HS256",
+        "exp": "86400000",
+        "jwkurl": "",
+        "jwkkid": "",
+        "secret": "qwe1P23Klx0*123l$kaSd-*0*98X23lkjasDsad31Z2-*0",
+        "key": "",
+        "signvar": "payload",
+        "storetoken": "token",
+        "x": 430,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ab61e7f6bb965e65",
+        "type": "jwt sign",
+        "z": "ce1bcc6514ed113f",
+        "name": "1 Hafta",
+        "alg": "HS256",
+        "exp": "604800000",
+        "jwkurl": "",
+        "jwkkid": "",
+        "secret": "qwe1P23Klx0*123l$kaSd-*0*98X23lkjasDsad31Z2-*0",
+        "key": "",
+        "signvar": "payload",
+        "storetoken": "token",
+        "x": 440,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ff3dba8d6e7d5cce",
+        "type": "switch",
+        "z": "ce1bcc6514ed113f",
+        "name": "",
+        "property": "_payload.rememberMe",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "nnull"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 290,
+        "y": 160,
+        "wires": [
+            [
+                "59283f81b0468ed7"
+            ],
+            [
+                "ab61e7f6bb965e65"
+            ]
+        ]
+    },
+    {
+        "id": "f2006b4ad0770cdf",
+        "type": "status",
+        "z": "ce1bcc6514ed113f",
+        "name": "",
+        "scope": null,
+        "x": 200,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b8c5d9e157f77ff1",
+        "type": "subflow:ce1bcc6514ed113f",
+        "z": "60cd56e29d46ec42",
+        "g": "416967cbd719dd16",
+        "name": "",
+        "x": 300,
+        "y": 440,
+        "wires": [
+            [
+                "4b99fdac4e567a0c"
+            ]
+        ]
+    },
+    {
+        "id": "bfe4bcdab79c8c13",
+        "type": "inject",
+        "z": "60cd56e29d46ec42",
+        "g": "416967cbd719dd16",
+        "name": "Test",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"roles\":[\"superUser\"]}",
+        "payloadType": "json",
+        "x": 150,
+        "y": 440,
+        "wires": [
+            [
+                "b8c5d9e157f77ff1"
+            ]
+        ]
+    },
+    {
+        "id": "4b99fdac4e567a0c",
+        "type": "change",
+        "z": "60cd56e29d46ec42",
+        "g": "416967cbd719dd16",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 440,
+        "wires": [
+            [
+                "221de00df3a09428"
+            ]
+        ]
+    },
+    {
+        "id": "221de00df3a09428",
+        "type": "http request",
+        "z": "60cd56e29d46ec42",
+        "g": "416967cbd719dd16",
+        "name": "/whoami",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/whoami",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "x-token",
+                "valueType": "msg",
+                "valueValue": "token"
+            }
+        ],
+        "x": 660,
+        "y": 440,
+        "wires": [
+            [
+                "3b98948d2f7c762c"
+            ]
+        ]
+    },
+    {
+        "id": "3b98948d2f7c762c",
+        "type": "debug",
+        "z": "60cd56e29d46ec42",
+        "g": "416967cbd719dd16",
+        "name": "User",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "6069e6a036a1b6fb",
+        "type": "inject",
+        "z": "60cd56e29d46ec42",
+        "g": "416967cbd719dd16",
+        "name": "Test",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"roles\":[\"superUser\"]}",
+        "payloadType": "json",
+        "x": 150,
+        "y": 480,
+        "wires": [
+            [
+                "b3d1e351725bac2e"
+            ]
+        ]
+    },
+    {
+        "id": "b3d1e351725bac2e",
+        "type": "http request",
+        "z": "60cd56e29d46ec42",
+        "g": "416967cbd719dd16",
+        "name": "/whoami",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://localhost:1880/whoami",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "x-token",
+                "valueType": "msg",
+                "valueValue": "token"
+            }
+        ],
+        "x": 300,
+        "y": 480,
+        "wires": [
+            [
+                "2ba5747d62fbabe8"
+            ]
+        ]
+    },
+    {
+        "id": "2ba5747d62fbabe8",
+        "type": "debug",
+        "z": "60cd56e29d46ec42",
+        "g": "416967cbd719dd16",
+        "name": "User",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 480,
+        "wires": []
+    }
+]

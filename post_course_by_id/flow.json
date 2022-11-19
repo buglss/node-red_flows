@@ -1,0 +1,908 @@
+[
+    {
+        "id": "03271de67f231601",
+        "type": "subflow",
+        "name": "Basic Validation",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 200,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "22060b6e277098de"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 440,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "22060b6e277098de",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "validationSchema",
+                "type": "json",
+                "value": "{}"
+            }
+        ],
+        "meta": {},
+        "color": "#FFCC66",
+        "icon": "font-awesome/fa-crosshairs"
+    },
+    {
+        "id": "22060b6e277098de",
+        "type": "function",
+        "z": "03271de67f231601",
+        "name": "Validation",
+        "func": "let validationSchema = env.get(\"validationSchema\") || msg.validationSchema || null\n\nif (!validationSchema || !Object.keys(validationSchema).length) return msg\n\nlet payloadKeys = Object.keys(msg.payload)\nlet validationKeys = Object.keys(validationSchema)\nlet isUnmatchKeys = payloadKeys.filter(pk => !validationKeys.includes(pk)) || !validationKeys.filter(vk => !payloadKeys.includes(vk))\n\nif (isUnmatchKeys.length) {\n    msg.payload = {\n        message: `'${isUnmatchKeys}' parametres(ler)i geçersiz bir parametredir.`\n    }\n    return [null, msg]\n}\n\nfor (let field in validationSchema) {\n    if (validationSchema[field].require && (!msg.payload[field] && ![false, 0].includes(msg.payload[field]))) {\n        msg.payload = {\n            message: `'${field}' parametresi olmak zorundadır.`\n        }\n        return [null, msg]\n    }\n    if (msg.payload[field] && typeof msg.payload[field] !== validationSchema[field].type && !Array.isArray(msg.payload[field])) {\n        msg.payload = {\n            message: `'${field}' parametresinin tipi ${validationSchema[field].type} olmalıdır.`\n        }\n        return [null, msg]\n    }\n}\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 120,
+        "wires": [
+            [],
+            [
+                "bb06453e2e106811"
+            ]
+        ]
+    },
+    {
+        "id": "bb06453e2e106811",
+        "type": "subflow:82d5d8b46c2c8ce4",
+        "z": "03271de67f231601",
+        "name": "Invalid Handler",
+        "env": [
+            {
+                "name": "code",
+                "value": "1",
+                "type": "str"
+            },
+            {
+                "name": "message",
+                "value": "Uygun olmayan parametre veya parametre değeri gönderildi.",
+                "type": "str"
+            },
+            {
+                "name": "isShow",
+                "value": "true",
+                "type": "bool"
+            }
+        ],
+        "x": 500,
+        "y": 140,
+        "wires": [
+            [
+                "7f16a409b734cff1"
+            ]
+        ]
+    },
+    {
+        "id": "7f16a409b734cff1",
+        "type": "http response",
+        "z": "03271de67f231601",
+        "name": "",
+        "statusCode": "400",
+        "headers": {},
+        "x": 660,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "82d5d8b46c2c8ce4",
+        "type": "subflow",
+        "name": "Response",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 140,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "88b0bc59a49f3abf"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 520,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "88b0bc59a49f3abf",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "code",
+                "type": "str",
+                "value": "0",
+                "ui": {
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "en-US": "Başarılı"
+                                },
+                                "v": "0"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "Validasyon Hatası"
+                                },
+                                "v": "1"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "Sistem Hatası"
+                                },
+                                "v": "2"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "Veri Bulunamadı"
+                                },
+                                "v": "3"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "Yetki Hatası"
+                                },
+                                "v": "4"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "message",
+                "type": "str",
+                "value": "İşlem başarılı."
+            },
+            {
+                "name": "isShowMessage",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "Son kullanıcıya mesajı göster."
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "result",
+                "type": "json",
+                "value": "{}"
+            }
+        ],
+        "meta": {},
+        "color": "#FFF0F0",
+        "icon": "node-red/parser-json.svg"
+    },
+    {
+        "id": "88b0bc59a49f3abf",
+        "type": "function",
+        "z": "82d5d8b46c2c8ce4",
+        "name": "Prepare Response Object",
+        "func": "let { \n    code = env.get(\"code\"),\n    message = env.get(\"message\"),\n    isShowMessage = env.get(\"isShowMessage\"),\n    result = env.get(\"result\") } = msg.payload\n\nmsg.payload = { code, message, isShowMessage, result }\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5854a0bcd3715d6e",
+        "type": "subflow",
+        "name": "Role Checker",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 200,
+                "y": 140,
+                "wires": [
+                    {
+                        "id": "dd56a6da12d8b9de"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 440,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "dd56a6da12d8b9de",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "admin",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "student",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "teacher",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "forgot",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "anonymous",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "type": "checkbox"
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#FFAAAA",
+        "icon": "font-awesome/fa-user-secret",
+        "status": {
+            "x": 360,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "77d32a3bf00f9bf0",
+                    "port": 0
+                }
+            ]
+        }
+    },
+    {
+        "id": "dd56a6da12d8b9de",
+        "type": "function",
+        "z": "5854a0bcd3715d6e",
+        "name": "Checker",
+        "func": "let allowRoles = [\n    env.get(\"admin\") && \"admin\",\n    env.get(\"teacher\") && \"teacher\",\n    env.get(\"student\") && \"student\",\n    env.get(\"forgot\") && \"forgot\",\n    env.get(\"anonymous\") && \"anonymous\"\n].filter(Boolean)\n\nlet user = msg.user || msg.token || msg.payload\n\nif (user && (user.roles.includes(\"superUser\") || allowRoles.some(allowRole => user.roles.includes(allowRole)))) return msg\n\nreturn [null, msg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 140,
+        "wires": [
+            [],
+            [
+                "fac5498d712838dd"
+            ]
+        ]
+    },
+    {
+        "id": "fac5498d712838dd",
+        "type": "subflow:82d5d8b46c2c8ce4",
+        "z": "5854a0bcd3715d6e",
+        "name": "Deny Handler",
+        "env": [
+            {
+                "name": "code",
+                "value": "4",
+                "type": "str"
+            },
+            {
+                "name": "message",
+                "value": "Yetkisiz erişim.",
+                "type": "str"
+            },
+            {
+                "name": "isShow",
+                "type": "bool",
+                "value": "true"
+            }
+        ],
+        "x": 490,
+        "y": 160,
+        "wires": [
+            [
+                "53c22e9df623d8e5"
+            ]
+        ]
+    },
+    {
+        "id": "53c22e9df623d8e5",
+        "type": "http response",
+        "z": "5854a0bcd3715d6e",
+        "name": "",
+        "statusCode": "401",
+        "headers": {},
+        "x": 640,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "77d32a3bf00f9bf0",
+        "type": "status",
+        "z": "5854a0bcd3715d6e",
+        "name": "",
+        "scope": null,
+        "x": 240,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e94d0628e8b18d22",
+        "type": "subflow",
+        "name": "JWT Verify",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 180,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "3282e40019dd57e3"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 780,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "ac5fef71cca79e94",
+                        "port": 0
+                    },
+                    {
+                        "id": "632350b7ceed4c0d",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "token",
+                "type": "str",
+                "value": ""
+            }
+        ],
+        "meta": {},
+        "color": "#3FADB5",
+        "icon": "font-awesome/fa-drivers-license",
+        "status": {
+            "x": 360,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "5186a3069fef881a",
+                    "port": 0
+                }
+            ]
+        }
+    },
+    {
+        "id": "5186a3069fef881a",
+        "type": "status",
+        "z": "e94d0628e8b18d22",
+        "name": "",
+        "scope": null,
+        "x": 220,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "12a7ab9b8cfe8a3c",
+        "type": "jwt verify",
+        "z": "e94d0628e8b18d22",
+        "name": "",
+        "alg": [
+            "HS256"
+        ],
+        "jwkurl": "",
+        "secret": "qwe1P23Klx0*123l$kaSd-*0*98X23lkjasDsad31Z2-*0",
+        "key": "",
+        "signvar": "token",
+        "storetoken": "token",
+        "x": 470,
+        "y": 180,
+        "wires": [
+            [
+                "632350b7ceed4c0d"
+            ]
+        ]
+    },
+    {
+        "id": "3282e40019dd57e3",
+        "type": "function",
+        "z": "e94d0628e8b18d22",
+        "name": "Token",
+        "func": "msg.token = env.get(\"token\") || msg.req?.cookies.token || msg.req?.headers[\"x-token\"] || msg.token || \"\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 180,
+        "wires": [
+            [
+                "12a7ab9b8cfe8a3c"
+            ]
+        ]
+    },
+    {
+        "id": "3676cbd8d6c3d1e3",
+        "type": "catch",
+        "z": "e94d0628e8b18d22",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 480,
+        "y": 140,
+        "wires": [
+            [
+                "ac5fef71cca79e94"
+            ]
+        ]
+    },
+    {
+        "id": "ac5fef71cca79e94",
+        "type": "function",
+        "z": "e94d0628e8b18d22",
+        "name": "Default Token",
+        "func": "msg.token = {\n    username: \"anonymous\",\n    email: \"\",\n    displayName: \"\",\n    roles: [\"anonymous\", \"everyone\"],\n    ip: msg.req.headers[\"x-real-ip\"] || msg.req.headers[\"x-forwarded-for\"] || msg.req.ip\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "632350b7ceed4c0d",
+        "type": "function",
+        "z": "e94d0628e8b18d22",
+        "name": "Has Decode",
+        "func": "if(!msg.token) {\n    // Move Default Token\n    node.error(\"\", msg);\n    return\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "62a9063c0bcda696",
+        "type": "subflow",
+        "name": "Who Am I",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 260,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "ec0b203356c14f51"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 740,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "893ef30120f3d5c2",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#A6BBCF",
+        "icon": "font-awesome/fa-question",
+        "status": {
+            "x": 440,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "1aa4b6e897f9bbed",
+                    "port": 0
+                }
+            ]
+        }
+    },
+    {
+        "id": "1aa4b6e897f9bbed",
+        "type": "status",
+        "z": "62a9063c0bcda696",
+        "name": "",
+        "scope": null,
+        "x": 320,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ec0b203356c14f51",
+        "type": "subflow:e94d0628e8b18d22",
+        "z": "62a9063c0bcda696",
+        "name": "",
+        "x": 390,
+        "y": 160,
+        "wires": [
+            [
+                "893ef30120f3d5c2"
+            ]
+        ]
+    },
+    {
+        "id": "893ef30120f3d5c2",
+        "type": "function",
+        "z": "62a9063c0bcda696",
+        "name": "Create User Object",
+        "func": "msg.user = {\n    username: msg.token.username,\n    displayName: msg.token.displayName,\n    email: msg.token.email,\n    roles: msg.token.roles\n}\ndelete msg.token\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a926c7d9ca6f9e5c",
+        "type": "http in",
+        "z": "0192faa6872de10c",
+        "name": "",
+        "url": "/course/:id",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 380,
+        "wires": [
+            [
+                "6e1a71d5ac215ad2"
+            ]
+        ]
+    },
+    {
+        "id": "6e1a71d5ac215ad2",
+        "type": "subflow:62a9063c0bcda696",
+        "z": "0192faa6872de10c",
+        "name": "",
+        "x": 360,
+        "y": 380,
+        "wires": [
+            [
+                "85d2117cc89a4ebe"
+            ]
+        ]
+    },
+    {
+        "id": "85d2117cc89a4ebe",
+        "type": "subflow:5854a0bcd3715d6e",
+        "z": "0192faa6872de10c",
+        "name": "",
+        "env": [
+            {
+                "name": "admin",
+                "type": "bool",
+                "value": "true"
+            },
+            {
+                "name": "teacher",
+                "type": "bool",
+                "value": "true"
+            }
+        ],
+        "x": 540,
+        "y": 380,
+        "wires": [
+            [
+                "83eedfabdefd3de3"
+            ]
+        ]
+    },
+    {
+        "id": "83eedfabdefd3de3",
+        "type": "subflow:03271de67f231601",
+        "z": "0192faa6872de10c",
+        "name": "",
+        "env": [
+            {
+                "name": "validationSchema",
+                "value": "{\"schoolName\":{\"type\":\"string\",\"require\":true},\"departmentName\":{\"type\":\"string\",\"require\":true},\"courseCode\":{\"type\":\"string\",\"require\":true}}",
+                "type": "json"
+            }
+        ],
+        "x": 740,
+        "y": 380,
+        "wires": [
+            [
+                "d0ea54907040c6fb"
+            ]
+        ]
+    },
+    {
+        "id": "d0ea54907040c6fb",
+        "type": "change",
+        "z": "0192faa6872de10c",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "_payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 950,
+        "y": 380,
+        "wires": [
+            [
+                "d7561879ce51dec3"
+            ]
+        ]
+    },
+    {
+        "id": "d7561879ce51dec3",
+        "type": "function",
+        "z": "0192faa6872de10c",
+        "name": "Query",
+        "func": "let q = {\n    _id: msg.req.params.id\n}\n\nif(!msg.user.roles.includes(\"superUser\")) {\n    q[\"auth\"] = {\n        $elemMatch: {\n            name: { $in: msg.user.roles },\n            access: \"w\"\n        }\n    }\n}\n\nmsg.payload = [q]\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1130,
+        "y": 380,
+        "wires": [
+            [
+                "6ceb8a5ba8cdcf57"
+            ]
+        ]
+    },
+    {
+        "id": "6ceb8a5ba8cdcf57",
+        "type": "mongodb4",
+        "z": "0192faa6872de10c",
+        "clientNode": "da6360c8f119cb98",
+        "mode": "collection",
+        "collection": "Courses",
+        "operation": "count",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 1270,
+        "y": 380,
+        "wires": [
+            [
+                "3b1c6b1d65774df6"
+            ]
+        ]
+    },
+    {
+        "id": "3b1c6b1d65774df6",
+        "type": "switch",
+        "z": "0192faa6872de10c",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1410,
+        "y": 380,
+        "wires": [
+            [
+                "f61766dc18aebfb1"
+            ],
+            [
+                "db91d13ff0b0fa64"
+            ]
+        ]
+    },
+    {
+        "id": "f61766dc18aebfb1",
+        "type": "function",
+        "z": "0192faa6872de10c",
+        "name": "Query",
+        "func": "let stamp = {\n    createAt: new Date(),\n    username: msg.user.username,\n    email: msg.user.email,\n    displayName: msg.user.displayName,\n    ip: msg.req?.headers[\"x-real-ip\"] || msg.req?.headers[\"x-forwarded-for\"] || msg.req?.ip || \"127.0.0.1\"\n}\nmsg.payload = [\n    {\n        _id: msg.req.params.id\n    },\n    {\n        $set: {...msg._payload, stamp}\n    }\n]\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1550,
+        "y": 360,
+        "wires": [
+            [
+                "658cc14ad503d8dd"
+            ]
+        ]
+    },
+    {
+        "id": "db91d13ff0b0fa64",
+        "type": "subflow:82d5d8b46c2c8ce4",
+        "z": "0192faa6872de10c",
+        "name": "Access Denited",
+        "env": [
+            {
+                "name": "code",
+                "value": "4",
+                "type": "str"
+            },
+            {
+                "name": "message",
+                "value": "Bu kursu düzenleme yetkiniz yoktur.",
+                "type": "str"
+            },
+            {
+                "name": "isShowMessage",
+                "type": "bool",
+                "value": "true"
+            }
+        ],
+        "x": 1580,
+        "y": 400,
+        "wires": [
+            [
+                "2480679dbce5cc8a"
+            ]
+        ]
+    },
+    {
+        "id": "658cc14ad503d8dd",
+        "type": "mongodb4",
+        "z": "0192faa6872de10c",
+        "clientNode": "da6360c8f119cb98",
+        "mode": "collection",
+        "collection": "Courses",
+        "operation": "updateOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 1710,
+        "y": 360,
+        "wires": [
+            [
+                "fe288e1a247cd6ee"
+            ]
+        ]
+    },
+    {
+        "id": "2480679dbce5cc8a",
+        "type": "http response",
+        "z": "0192faa6872de10c",
+        "name": "",
+        "statusCode": "401",
+        "headers": {},
+        "x": 1760,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "fe288e1a247cd6ee",
+        "type": "subflow:82d5d8b46c2c8ce4",
+        "z": "0192faa6872de10c",
+        "name": "Success",
+        "x": 1880,
+        "y": 360,
+        "wires": [
+            [
+                "e5ccfefdb063460c"
+            ]
+        ]
+    },
+    {
+        "id": "e5ccfefdb063460c",
+        "type": "http response",
+        "z": "0192faa6872de10c",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 2040,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "da6360c8f119cb98",
+        "type": "mongodb4-client",
+        "name": "Paperx DB",
+        "protocol": "mongodb",
+        "hostname": "localhost",
+        "port": "27017",
+        "dbName": "paperx",
+        "authSource": "",
+        "authMechanism": "DEFAULT",
+        "tls": false,
+        "tlsCAFile": "",
+        "tlsInsecure": false,
+        "uri": "",
+        "advanced": "",
+        "uriTabActive": "tab-uri-simple"
+    }
+]

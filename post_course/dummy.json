@@ -1,0 +1,267 @@
+[
+    {
+        "id": "52e4b45d0fffe1d6",
+        "type": "group",
+        "z": "60cd56e29d46ec42",
+        "name": "POST /course",
+        "style": {
+            "label": true
+        },
+        "nodes": [
+            "be706a269712483a",
+            "59f5462ca17a64e1",
+            "e201c73d5e2f2ecd",
+            "1b1897391e9ff198",
+            "9c641f655bd1df06"
+        ],
+        "x": 54,
+        "y": 1799,
+        "w": 872,
+        "h": 82
+    },
+    {
+        "id": "ce1bcc6514ed113f",
+        "type": "subflow",
+        "name": "JWT Sign",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 180,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "ff3dba8d6e7d5cce"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 560,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "59283f81b0468ed7",
+                        "port": 0
+                    },
+                    {
+                        "id": "ab61e7f6bb965e65",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#C0DEED",
+        "icon": "font-awesome/fa-hashtag",
+        "status": {
+            "x": 320,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "f2006b4ad0770cdf",
+                    "port": 0
+                }
+            ]
+        }
+    },
+    {
+        "id": "59283f81b0468ed7",
+        "type": "jwt sign",
+        "z": "ce1bcc6514ed113f",
+        "name": "1 Gün",
+        "alg": "HS256",
+        "exp": "86400000",
+        "jwkurl": "",
+        "jwkkid": "",
+        "secret": "qwe1P23Klx0*123l$kaSd-*0*98X23lkjasDsad31Z2-*0",
+        "key": "",
+        "signvar": "payload",
+        "storetoken": "token",
+        "x": 430,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ab61e7f6bb965e65",
+        "type": "jwt sign",
+        "z": "ce1bcc6514ed113f",
+        "name": "1 Hafta",
+        "alg": "HS256",
+        "exp": "604800000",
+        "jwkurl": "",
+        "jwkkid": "",
+        "secret": "qwe1P23Klx0*123l$kaSd-*0*98X23lkjasDsad31Z2-*0",
+        "key": "",
+        "signvar": "payload",
+        "storetoken": "token",
+        "x": 440,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ff3dba8d6e7d5cce",
+        "type": "switch",
+        "z": "ce1bcc6514ed113f",
+        "name": "",
+        "property": "_payload.rememberMe",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            },
+            {
+                "t": "nnull"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 290,
+        "y": 160,
+        "wires": [
+            [
+                "59283f81b0468ed7"
+            ],
+            [
+                "ab61e7f6bb965e65"
+            ]
+        ]
+    },
+    {
+        "id": "f2006b4ad0770cdf",
+        "type": "status",
+        "z": "ce1bcc6514ed113f",
+        "name": "",
+        "scope": null,
+        "x": 200,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "be706a269712483a",
+        "type": "http request",
+        "z": "60cd56e29d46ec42",
+        "g": "52e4b45d0fffe1d6",
+        "name": "/course",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "query",
+        "url": "http://localhost:1880/course",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "x-token",
+                "valueType": "msg",
+                "valueValue": "token"
+            }
+        ],
+        "x": 660,
+        "y": 1840,
+        "wires": [
+            [
+                "e201c73d5e2f2ecd"
+            ]
+        ]
+    },
+    {
+        "id": "59f5462ca17a64e1",
+        "type": "change",
+        "z": "60cd56e29d46ec42",
+        "g": "52e4b45d0fffe1d6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"schoolName\":\"School 1\",\"departmentName\":\"Department 1\",\"courseCode\":\"Course 1\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 480,
+        "y": 1840,
+        "wires": [
+            [
+                "be706a269712483a"
+            ]
+        ]
+    },
+    {
+        "id": "e201c73d5e2f2ecd",
+        "type": "debug",
+        "z": "60cd56e29d46ec42",
+        "g": "52e4b45d0fffe1d6",
+        "name": "Course",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 1840,
+        "wires": []
+    },
+    {
+        "id": "1b1897391e9ff198",
+        "type": "subflow:ce1bcc6514ed113f",
+        "z": "60cd56e29d46ec42",
+        "g": "52e4b45d0fffe1d6",
+        "name": "",
+        "x": 300,
+        "y": 1840,
+        "wires": [
+            [
+                "59f5462ca17a64e1"
+            ]
+        ]
+    },
+    {
+        "id": "9c641f655bd1df06",
+        "type": "inject",
+        "z": "60cd56e29d46ec42",
+        "g": "52e4b45d0fffe1d6",
+        "name": "Test",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"roles\":[\"superUser\"]}",
+        "payloadType": "json",
+        "x": 150,
+        "y": 1840,
+        "wires": [
+            [
+                "1b1897391e9ff198"
+            ]
+        ]
+    }
+]

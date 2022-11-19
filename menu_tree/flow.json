@@ -1,0 +1,784 @@
+[
+    {
+        "id": "8de8cc8331494fb5",
+        "type": "subflow",
+        "name": "Prepare Find Query",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 240,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "2da13472b1419b30"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 460,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "2da13472b1419b30",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "absoluteFields",
+                "type": "json",
+                "value": "[]"
+            },
+            {
+                "name": "ignoreFields",
+                "type": "json",
+                "value": "[]"
+            }
+        ],
+        "meta": {},
+        "color": "#E6E0F8",
+        "icon": "font-awesome/fa-refresh"
+    },
+    {
+        "id": "2da13472b1419b30",
+        "type": "function",
+        "z": "8de8cc8331494fb5",
+        "name": "Query",
+        "func": "let q = {}\n\nlet absoluteFields = env.get(\"absoluteFields\") || msg.absoluteFields || []\nlet ignoreFields = env.get(\"ignoreFields\") || msg.ignoreFields || []\nfor(let field in msg.payload) {\n    if (ignoreFields.includes(field)) continue\n    if (absoluteFields.includes(field)) q[field] = msg.payload[field]\n    else if (typeof msg.payload[field] === \"string\") q[field] = new RegExp(msg.payload[field].replace(/[iİıI]/g,\"[iİıI]\"), \"i\")\n    else if (Array.isArray(msg.payload[field])) q[field] = { $in: msg.payload[field] }\n    else q[field] = msg.payload[field]\n}\n\nmsg.payload = q\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e94d0628e8b18d22",
+        "type": "subflow",
+        "name": "JWT Verify",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 180,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "3282e40019dd57e3"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 780,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "ac5fef71cca79e94",
+                        "port": 0
+                    },
+                    {
+                        "id": "632350b7ceed4c0d",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "token",
+                "type": "str",
+                "value": ""
+            }
+        ],
+        "meta": {},
+        "color": "#3FADB5",
+        "icon": "font-awesome/fa-drivers-license",
+        "status": {
+            "x": 360,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "5186a3069fef881a",
+                    "port": 0
+                }
+            ]
+        }
+    },
+    {
+        "id": "5186a3069fef881a",
+        "type": "status",
+        "z": "e94d0628e8b18d22",
+        "name": "",
+        "scope": null,
+        "x": 220,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "12a7ab9b8cfe8a3c",
+        "type": "jwt verify",
+        "z": "e94d0628e8b18d22",
+        "name": "",
+        "alg": [
+            "HS256"
+        ],
+        "jwkurl": "",
+        "secret": "qwe1P23Klx0*123l$kaSd-*0*98X23lkjasDsad31Z2-*0",
+        "key": "",
+        "signvar": "token",
+        "storetoken": "token",
+        "x": 470,
+        "y": 180,
+        "wires": [
+            [
+                "632350b7ceed4c0d"
+            ]
+        ]
+    },
+    {
+        "id": "3282e40019dd57e3",
+        "type": "function",
+        "z": "e94d0628e8b18d22",
+        "name": "Token",
+        "func": "msg.token = env.get(\"token\") || msg.req?.cookies.token || msg.req?.headers[\"x-token\"] || msg.token || \"\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 180,
+        "wires": [
+            [
+                "12a7ab9b8cfe8a3c"
+            ]
+        ]
+    },
+    {
+        "id": "3676cbd8d6c3d1e3",
+        "type": "catch",
+        "z": "e94d0628e8b18d22",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 480,
+        "y": 140,
+        "wires": [
+            [
+                "ac5fef71cca79e94"
+            ]
+        ]
+    },
+    {
+        "id": "ac5fef71cca79e94",
+        "type": "function",
+        "z": "e94d0628e8b18d22",
+        "name": "Default Token",
+        "func": "msg.token = {\n    username: \"anonymous\",\n    email: \"\",\n    displayName: \"\",\n    roles: [\"anonymous\", \"everyone\"],\n    ip: msg.req.headers[\"x-real-ip\"] || msg.req.headers[\"x-forwarded-for\"] || msg.req.ip\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "632350b7ceed4c0d",
+        "type": "function",
+        "z": "e94d0628e8b18d22",
+        "name": "Has Decode",
+        "func": "if(!msg.token) {\n    // Move Default Token\n    node.error(\"\", msg);\n    return\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "62a9063c0bcda696",
+        "type": "subflow",
+        "name": "Who Am I",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 260,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "ec0b203356c14f51"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 740,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "893ef30120f3d5c2",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#A6BBCF",
+        "icon": "font-awesome/fa-question",
+        "status": {
+            "x": 440,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "1aa4b6e897f9bbed",
+                    "port": 0
+                }
+            ]
+        }
+    },
+    {
+        "id": "1aa4b6e897f9bbed",
+        "type": "status",
+        "z": "62a9063c0bcda696",
+        "name": "",
+        "scope": null,
+        "x": 320,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ec0b203356c14f51",
+        "type": "subflow:e94d0628e8b18d22",
+        "z": "62a9063c0bcda696",
+        "name": "",
+        "x": 390,
+        "y": 160,
+        "wires": [
+            [
+                "893ef30120f3d5c2"
+            ]
+        ]
+    },
+    {
+        "id": "893ef30120f3d5c2",
+        "type": "function",
+        "z": "62a9063c0bcda696",
+        "name": "Create User Object",
+        "func": "msg.user = {\n    username: msg.token.username,\n    displayName: msg.token.displayName,\n    email: msg.token.email,\n    roles: msg.token.roles\n}\ndelete msg.token\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "82d5d8b46c2c8ce4",
+        "type": "subflow",
+        "name": "Response",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 140,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "88b0bc59a49f3abf"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 520,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "88b0bc59a49f3abf",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "code",
+                "type": "str",
+                "value": "0",
+                "ui": {
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "en-US": "Başarılı"
+                                },
+                                "v": "0"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "Validasyon Hatası"
+                                },
+                                "v": "1"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "Sistem Hatası"
+                                },
+                                "v": "2"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "Veri Bulunamadı"
+                                },
+                                "v": "3"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "Yetki Hatası"
+                                },
+                                "v": "4"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "message",
+                "type": "str",
+                "value": "İşlem başarılı."
+            },
+            {
+                "name": "isShowMessage",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "label": {
+                        "en-US": "Son kullanıcıya mesajı göster."
+                    },
+                    "type": "checkbox"
+                }
+            },
+            {
+                "name": "result",
+                "type": "json",
+                "value": "{}"
+            }
+        ],
+        "meta": {},
+        "color": "#FFF0F0",
+        "icon": "node-red/parser-json.svg"
+    },
+    {
+        "id": "88b0bc59a49f3abf",
+        "type": "function",
+        "z": "82d5d8b46c2c8ce4",
+        "name": "Prepare Response Object",
+        "func": "let { \n    code = env.get(\"code\"),\n    message = env.get(\"message\"),\n    isShowMessage = env.get(\"isShowMessage\"),\n    result = env.get(\"result\") } = msg.payload\n\nmsg.payload = { code, message, isShowMessage, result }\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "03271de67f231601",
+        "type": "subflow",
+        "name": "Basic Validation",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 200,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "22060b6e277098de"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 440,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "22060b6e277098de",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "validationSchema",
+                "type": "json",
+                "value": "{}"
+            }
+        ],
+        "meta": {},
+        "color": "#FFCC66",
+        "icon": "font-awesome/fa-crosshairs"
+    },
+    {
+        "id": "22060b6e277098de",
+        "type": "function",
+        "z": "03271de67f231601",
+        "name": "Validation",
+        "func": "let validationSchema = env.get(\"validationSchema\") || msg.validationSchema || null\n\nif (!validationSchema || !Object.keys(validationSchema).length) return msg\n\nlet payloadKeys = Object.keys(msg.payload)\nlet validationKeys = Object.keys(validationSchema)\nlet isUnmatchKeys = payloadKeys.filter(pk => !validationKeys.includes(pk)) || !validationKeys.filter(vk => !payloadKeys.includes(vk))\n\nif (isUnmatchKeys.length) {\n    msg.payload = {\n        message: `'${isUnmatchKeys}' parametres(ler)i geçersiz bir parametredir.`\n    }\n    return [null, msg]\n}\n\nfor (let field in validationSchema) {\n    if (validationSchema[field].require && (!msg.payload[field] && ![false, 0].includes(msg.payload[field]))) {\n        msg.payload = {\n            message: `'${field}' parametresi olmak zorundadır.`\n        }\n        return [null, msg]\n    }\n    if (msg.payload[field] && typeof msg.payload[field] !== validationSchema[field].type && !Array.isArray(msg.payload[field])) {\n        msg.payload = {\n            message: `'${field}' parametresinin tipi ${validationSchema[field].type} olmalıdır.`\n        }\n        return [null, msg]\n    }\n}\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 120,
+        "wires": [
+            [],
+            [
+                "bb06453e2e106811"
+            ]
+        ]
+    },
+    {
+        "id": "bb06453e2e106811",
+        "type": "subflow:82d5d8b46c2c8ce4",
+        "z": "03271de67f231601",
+        "name": "Invalid Handler",
+        "env": [
+            {
+                "name": "code",
+                "value": "1",
+                "type": "str"
+            },
+            {
+                "name": "message",
+                "value": "Uygun olmayan parametre veya parametre değeri gönderildi.",
+                "type": "str"
+            },
+            {
+                "name": "isShow",
+                "value": "true",
+                "type": "bool"
+            }
+        ],
+        "x": 500,
+        "y": 140,
+        "wires": [
+            [
+                "7f16a409b734cff1"
+            ]
+        ]
+    },
+    {
+        "id": "7f16a409b734cff1",
+        "type": "http response",
+        "z": "03271de67f231601",
+        "name": "",
+        "statusCode": "400",
+        "headers": {},
+        "x": 660,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "5ea106c263b4d8ca",
+        "type": "subflow:03271de67f231601",
+        "z": "d54a39becbc92049",
+        "name": "",
+        "env": [
+            {
+                "name": "validationSchema",
+                "value": "{\"level\":{\"type\":\"number\",\"require\":false},\"name\":{\"type\":\"string\",\"require\":false},\"parent\":{\"type\":\"string\",\"require\":false}}",
+                "type": "json"
+            }
+        ],
+        "x": 360,
+        "y": 160,
+        "wires": [
+            [
+                "6eba85feacf55033"
+            ]
+        ]
+    },
+    {
+        "id": "b75fb78fb33501fa",
+        "type": "http in",
+        "z": "d54a39becbc92049",
+        "name": "",
+        "url": "/menu-tree",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 160,
+        "wires": [
+            [
+                "5ea106c263b4d8ca"
+            ]
+        ]
+    },
+    {
+        "id": "6eba85feacf55033",
+        "type": "function",
+        "z": "d54a39becbc92049",
+        "name": "Detail Validation",
+        "func": "if(msg.payload.level && msg.payload.level < -1) {\n    msg.payload = {\n        message: \"'level' parametresi negatif bir değer olamaz. (-1 Hariç)\"\n    }\n    return [null, msg]\n}\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 160,
+        "wires": [
+            [
+                "77732709905e4fa3"
+            ],
+            [
+                "ba297070b06174ea"
+            ]
+        ]
+    },
+    {
+        "id": "77732709905e4fa3",
+        "type": "subflow:62a9063c0bcda696",
+        "z": "d54a39becbc92049",
+        "name": "",
+        "x": 740,
+        "y": 140,
+        "wires": [
+            [
+                "8476a7589ed5f5a9"
+            ]
+        ]
+    },
+    {
+        "id": "ba297070b06174ea",
+        "type": "subflow:82d5d8b46c2c8ce4",
+        "z": "d54a39becbc92049",
+        "name": "Invalid Handler",
+        "env": [
+            {
+                "name": "code",
+                "value": "1",
+                "type": "str"
+            },
+            {
+                "name": "message",
+                "value": "Uygun olmayan parametre veya parametre değeri gönderildi.",
+                "type": "str"
+            },
+            {
+                "name": "isShow",
+                "value": "true",
+                "type": "bool"
+            }
+        ],
+        "x": 760,
+        "y": 180,
+        "wires": [
+            [
+                "f24f247bfcb8dd10"
+            ]
+        ]
+    },
+    {
+        "id": "8476a7589ed5f5a9",
+        "type": "change",
+        "z": "d54a39becbc92049",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "_payload",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 140,
+        "wires": [
+            [
+                "23f6cd0d3827f8dd"
+            ]
+        ]
+    },
+    {
+        "id": "f24f247bfcb8dd10",
+        "type": "http response",
+        "z": "d54a39becbc92049",
+        "name": "",
+        "statusCode": "400",
+        "headers": {},
+        "x": 940,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "23f6cd0d3827f8dd",
+        "type": "subflow:8de8cc8331494fb5",
+        "z": "d54a39becbc92049",
+        "name": "",
+        "env": [
+            {
+                "name": "absoluteFields",
+                "value": "[\"parent\"]",
+                "type": "json"
+            },
+            {
+                "name": "ignoreFields",
+                "value": "[\"level\"]",
+                "type": "json"
+            }
+        ],
+        "x": 1150,
+        "y": 140,
+        "wires": [
+            [
+                "8781f11c21e2b0df"
+            ]
+        ]
+    },
+    {
+        "id": "8781f11c21e2b0df",
+        "type": "function",
+        "z": "d54a39becbc92049",
+        "name": "Query",
+        "func": "let q = msg.payload\n\nif(!msg.user.roles.includes(\"superUser\")) {\n    q[\"auth\"] = {\n        $elemMatch: {\n            name: { $in: msg.user.roles },\n            access: \"r\"\n        }\n    }\n}\n\nlet level = msg._payload.level || 1\nif (level === 1 && !q.parent) q.parent = \"\"\n\nmsg.payload = [[\n    {\n        $match: q\n    },\n    {\n        $project: {\n            parent: 1,\n            name: 1,\n            iconClass: 1,\n            href: 1\n        }\n    }\n]]\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1330,
+        "y": 140,
+        "wires": [
+            [
+                "4076d72c1efd7a27"
+            ]
+        ]
+    },
+    {
+        "id": "4076d72c1efd7a27",
+        "type": "mongodb4",
+        "z": "d54a39becbc92049",
+        "clientNode": "da6360c8f119cb98",
+        "mode": "collection",
+        "collection": "NavItems",
+        "operation": "aggregate",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 1480,
+        "y": 140,
+        "wires": [
+            [
+                "415d6ff5572c5c02"
+            ]
+        ]
+    },
+    {
+        "id": "415d6ff5572c5c02",
+        "type": "function",
+        "z": "d54a39becbc92049",
+        "name": "Prepare Menu",
+        "func": "let result = []\nlet itemQueue = []\n\nfunction findParentItem(child = {}, context = [], skipQueue = false) {\n    if (!child.parent) return null\n\n    let parentItem = null\n    for (let item of context) {\n        if (item.id === child.parent) { parentItem = item }\n        if (!parentItem && item.childs && item.childs.length) { parentItem = findParentItem(child, item.childs, true) } \n        if (parentItem) break\n    }\n    if (!parentItem && !skipQueue) itemQueue.push(child)\n    \n    return parentItem\n}\nfunction prepareMenuItems(item) {\n    if (!msg._payload.parent && item.parent) {\n        let parentItem = findParentItem(item, result)\n        parentItem && parentItem.childs.push(item)\n    } else {\n        result.push(item)\n    }\n}\nmsg.payload.forEach(item => {\n    prepareMenuItems({\n        id: item._id.toString(),\n        parent: item.parent,\n        name: item.name,\n        iconClass: item.iconClass,\n        href: item.href,\n        childs: []\n    })\n})\n\nitemQueue.forEach(item => {\n    prepareMenuItems({\n        id: item.id,\n        parent: item.parent,\n        name: item.name,\n        iconClass: item.iconClass,\n        href: item.href,\n        childs: []\n    })\n})\n\nmsg.payload = { result }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1660,
+        "y": 140,
+        "wires": [
+            [
+                "71d154bd7564f88a"
+            ]
+        ]
+    },
+    {
+        "id": "71d154bd7564f88a",
+        "type": "subflow:82d5d8b46c2c8ce4",
+        "z": "d54a39becbc92049",
+        "name": "Menu Data",
+        "x": 1850,
+        "y": 140,
+        "wires": [
+            [
+                "b5c24c19e6ce8e32"
+            ]
+        ]
+    },
+    {
+        "id": "b5c24c19e6ce8e32",
+        "type": "http response",
+        "z": "d54a39becbc92049",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 2020,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "da6360c8f119cb98",
+        "type": "mongodb4-client",
+        "name": "Paperx DB",
+        "protocol": "mongodb",
+        "hostname": "localhost",
+        "port": "27017",
+        "dbName": "paperx",
+        "authSource": "",
+        "authMechanism": "DEFAULT",
+        "tls": false,
+        "tlsCAFile": "",
+        "tlsInsecure": false,
+        "uri": "",
+        "advanced": "",
+        "uriTabActive": "tab-uri-simple"
+    }
+]
