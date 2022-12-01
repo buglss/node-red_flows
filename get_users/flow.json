@@ -163,6 +163,247 @@
         "wires": []
     },
     {
+        "id": "e94d0628e8b18d22",
+        "type": "subflow",
+        "name": "JWT Verify",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 180,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "3282e40019dd57e3"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 780,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "ac5fef71cca79e94",
+                        "port": 0
+                    },
+                    {
+                        "id": "632350b7ceed4c0d",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "token",
+                "type": "str",
+                "value": ""
+            }
+        ],
+        "meta": {},
+        "color": "#3FADB5",
+        "icon": "font-awesome/fa-drivers-license",
+        "status": {
+            "x": 360,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "5186a3069fef881a",
+                    "port": 0
+                }
+            ]
+        }
+    },
+    {
+        "id": "5186a3069fef881a",
+        "type": "status",
+        "z": "e94d0628e8b18d22",
+        "name": "",
+        "scope": null,
+        "x": 220,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "12a7ab9b8cfe8a3c",
+        "type": "jwt verify",
+        "z": "e94d0628e8b18d22",
+        "name": "",
+        "alg": [
+            "HS256"
+        ],
+        "jwkurl": "",
+        "secret": "qwe1P23Klx0*123l$kaSd-*0*98X23lkjasDsad31Z2-*0",
+        "key": "",
+        "signvar": "token",
+        "storetoken": "token",
+        "x": 470,
+        "y": 180,
+        "wires": [
+            [
+                "632350b7ceed4c0d"
+            ]
+        ]
+    },
+    {
+        "id": "3282e40019dd57e3",
+        "type": "function",
+        "z": "e94d0628e8b18d22",
+        "name": "Token",
+        "func": "msg.token = env.get(\"token\") || msg.req?.cookies.token || msg.req?.headers[\"x-token\"] || msg.token || \"\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 180,
+        "wires": [
+            [
+                "12a7ab9b8cfe8a3c"
+            ]
+        ]
+    },
+    {
+        "id": "3676cbd8d6c3d1e3",
+        "type": "catch",
+        "z": "e94d0628e8b18d22",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 480,
+        "y": 140,
+        "wires": [
+            [
+                "ac5fef71cca79e94"
+            ]
+        ]
+    },
+    {
+        "id": "ac5fef71cca79e94",
+        "type": "function",
+        "z": "e94d0628e8b18d22",
+        "name": "Default Token",
+        "func": "msg.token = {\n    username: \"anonymous\",\n    email: \"\",\n    displayName: \"\",\n    roles: [\"anonymous\", \"everyone\"],\n    ip: msg.req.headers[\"x-real-ip\"] || msg.req.headers[\"x-forwarded-for\"] || msg.req.ip\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "632350b7ceed4c0d",
+        "type": "function",
+        "z": "e94d0628e8b18d22",
+        "name": "Has Decode",
+        "func": "if(!msg.token) {\n    // Move Default Token\n    node.error(\"\", msg);\n    return\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "62a9063c0bcda696",
+        "type": "subflow",
+        "name": "Who Am I",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 260,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "ec0b203356c14f51"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 740,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "893ef30120f3d5c2",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#A6BBCF",
+        "icon": "font-awesome/fa-question",
+        "status": {
+            "x": 440,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "1aa4b6e897f9bbed",
+                    "port": 0
+                }
+            ]
+        }
+    },
+    {
+        "id": "1aa4b6e897f9bbed",
+        "type": "status",
+        "z": "62a9063c0bcda696",
+        "name": "",
+        "scope": null,
+        "x": 320,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ec0b203356c14f51",
+        "type": "subflow:e94d0628e8b18d22",
+        "z": "62a9063c0bcda696",
+        "name": "",
+        "x": 390,
+        "y": 160,
+        "wires": [
+            [
+                "893ef30120f3d5c2"
+            ]
+        ]
+    },
+    {
+        "id": "893ef30120f3d5c2",
+        "type": "function",
+        "z": "62a9063c0bcda696",
+        "name": "Create User Object",
+        "func": "msg.user = {\n    username: msg.token.username || \"\",\n    displayName: msg.token.displayName || \"\",\n    email: msg.token.email || \"\",\n    roles: msg.token.roles || []\n}\ndelete msg.token\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "82d5d8b46c2c8ce4",
         "type": "subflow",
         "name": "Response",
@@ -436,277 +677,6 @@
         ]
     },
     {
-        "id": "e94d0628e8b18d22",
-        "type": "subflow",
-        "name": "JWT Verify",
-        "info": "",
-        "category": "",
-        "in": [
-            {
-                "x": 180,
-                "y": 180,
-                "wires": [
-                    {
-                        "id": "3282e40019dd57e3"
-                    }
-                ]
-            }
-        ],
-        "out": [
-            {
-                "x": 780,
-                "y": 160,
-                "wires": [
-                    {
-                        "id": "ac5fef71cca79e94",
-                        "port": 0
-                    },
-                    {
-                        "id": "632350b7ceed4c0d",
-                        "port": 0
-                    }
-                ]
-            }
-        ],
-        "env": [
-            {
-                "name": "token",
-                "type": "str",
-                "value": ""
-            }
-        ],
-        "meta": {},
-        "color": "#3FADB5",
-        "icon": "font-awesome/fa-drivers-license",
-        "status": {
-            "x": 360,
-            "y": 60,
-            "wires": [
-                {
-                    "id": "5186a3069fef881a",
-                    "port": 0
-                }
-            ]
-        }
-    },
-    {
-        "id": "5186a3069fef881a",
-        "type": "status",
-        "z": "e94d0628e8b18d22",
-        "name": "",
-        "scope": null,
-        "x": 220,
-        "y": 60,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "12a7ab9b8cfe8a3c",
-        "type": "jwt verify",
-        "z": "e94d0628e8b18d22",
-        "name": "",
-        "alg": [
-            "HS256"
-        ],
-        "jwkurl": "",
-        "secret": "qwe1P23Klx0*123l$kaSd-*0*98X23lkjasDsad31Z2-*0",
-        "key": "",
-        "signvar": "token",
-        "storetoken": "token",
-        "x": 470,
-        "y": 180,
-        "wires": [
-            [
-                "632350b7ceed4c0d"
-            ]
-        ]
-    },
-    {
-        "id": "3282e40019dd57e3",
-        "type": "function",
-        "z": "e94d0628e8b18d22",
-        "name": "Token",
-        "func": "msg.token = env.get(\"token\") || msg.req?.cookies.token || msg.req?.headers[\"x-token\"] || msg.token || \"\"\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 310,
-        "y": 180,
-        "wires": [
-            [
-                "12a7ab9b8cfe8a3c"
-            ]
-        ]
-    },
-    {
-        "id": "3676cbd8d6c3d1e3",
-        "type": "catch",
-        "z": "e94d0628e8b18d22",
-        "name": "",
-        "scope": null,
-        "uncaught": false,
-        "x": 480,
-        "y": 140,
-        "wires": [
-            [
-                "ac5fef71cca79e94"
-            ]
-        ]
-    },
-    {
-        "id": "ac5fef71cca79e94",
-        "type": "function",
-        "z": "e94d0628e8b18d22",
-        "name": "Default Token",
-        "func": "msg.token = {\n    username: \"anonymous\",\n    email: \"\",\n    displayName: \"\",\n    roles: [\"anonymous\", \"everyone\"],\n    ip: msg.req.headers[\"x-real-ip\"] || msg.req.headers[\"x-forwarded-for\"] || msg.req.ip\n}\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 640,
-        "y": 140,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "632350b7ceed4c0d",
-        "type": "function",
-        "z": "e94d0628e8b18d22",
-        "name": "Has Decode",
-        "func": "if(!msg.token) {\n    // Move Default Token\n    node.error(\"\", msg);\n    return\n}\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 650,
-        "y": 180,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "62a9063c0bcda696",
-        "type": "subflow",
-        "name": "Who Am I",
-        "info": "",
-        "category": "",
-        "in": [
-            {
-                "x": 260,
-                "y": 160,
-                "wires": [
-                    {
-                        "id": "ec0b203356c14f51"
-                    }
-                ]
-            }
-        ],
-        "out": [
-            {
-                "x": 740,
-                "y": 160,
-                "wires": [
-                    {
-                        "id": "893ef30120f3d5c2",
-                        "port": 0
-                    }
-                ]
-            }
-        ],
-        "env": [],
-        "meta": {},
-        "color": "#A6BBCF",
-        "icon": "font-awesome/fa-question",
-        "status": {
-            "x": 440,
-            "y": 60,
-            "wires": [
-                {
-                    "id": "1aa4b6e897f9bbed",
-                    "port": 0
-                }
-            ]
-        }
-    },
-    {
-        "id": "1aa4b6e897f9bbed",
-        "type": "status",
-        "z": "62a9063c0bcda696",
-        "name": "",
-        "scope": null,
-        "x": 320,
-        "y": 60,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "ec0b203356c14f51",
-        "type": "subflow:e94d0628e8b18d22",
-        "z": "62a9063c0bcda696",
-        "name": "",
-        "x": 390,
-        "y": 160,
-        "wires": [
-            [
-                "893ef30120f3d5c2"
-            ]
-        ]
-    },
-    {
-        "id": "893ef30120f3d5c2",
-        "type": "function",
-        "z": "62a9063c0bcda696",
-        "name": "Create User Object",
-        "func": "msg.user = {\n    username: msg.token.username,\n    displayName: msg.token.displayName,\n    email: msg.token.email,\n    roles: msg.token.roles\n}\ndelete msg.token\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 590,
-        "y": 160,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "6626bbcca6d2692f",
-        "type": "subflow:62a9063c0bcda696",
-        "z": "1f62240e0094d3c9",
-        "name": "",
-        "x": 300,
-        "y": 620,
-        "wires": [
-            [
-                "40b6bd07ad2e318e"
-            ]
-        ]
-    },
-    {
-        "id": "6e4c5a9c51fb888d",
-        "type": "http in",
-        "z": "1f62240e0094d3c9",
-        "name": "",
-        "url": "/users",
-        "method": "get",
-        "upload": false,
-        "swaggerDoc": "",
-        "x": 120,
-        "y": 620,
-        "wires": [
-            [
-                "6626bbcca6d2692f"
-            ]
-        ]
-    },
-    {
         "id": "40b6bd07ad2e318e",
         "type": "subflow:5854a0bcd3715d6e",
         "z": "1f62240e0094d3c9",
@@ -727,6 +697,19 @@
         ]
     },
     {
+        "id": "6626bbcca6d2692f",
+        "type": "subflow:62a9063c0bcda696",
+        "z": "1f62240e0094d3c9",
+        "name": "",
+        "x": 300,
+        "y": 620,
+        "wires": [
+            [
+                "40b6bd07ad2e318e"
+            ]
+        ]
+    },
+    {
         "id": "80b2338562a14608",
         "type": "subflow:03271de67f231601",
         "z": "1f62240e0094d3c9",
@@ -743,6 +726,23 @@
         "wires": [
             [
                 "40fe7829f2578f61"
+            ]
+        ]
+    },
+    {
+        "id": "6e4c5a9c51fb888d",
+        "type": "http in",
+        "z": "1f62240e0094d3c9",
+        "name": "",
+        "url": "/users",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 620,
+        "wires": [
+            [
+                "6626bbcca6d2692f"
             ]
         ]
     },
@@ -778,6 +778,13 @@
         "type": "subflow:8de8cc8331494fb5",
         "z": "1f62240e0094d3c9",
         "name": "",
+        "env": [
+            {
+                "name": "absoluteFields",
+                "value": "[\"username\",\"email\"]",
+                "type": "json"
+            }
+        ],
         "x": 1110,
         "y": 620,
         "wires": [
@@ -829,7 +836,7 @@
         "type": "function",
         "z": "1f62240e0094d3c9",
         "name": "Result",
-        "func": "msg.payload = {\n    result: msg.payload\n}\nreturn msg;",
+        "func": "msg.payload = {\n    result: { data: msg.payload }\n}\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
@@ -872,7 +879,7 @@
         "type": "mongodb4-client",
         "name": "Paperx DB",
         "protocol": "mongodb",
-        "hostname": "localhost",
+        "hostname": "127.0.0.1",
         "port": "27017",
         "dbName": "paperx",
         "authSource": "",

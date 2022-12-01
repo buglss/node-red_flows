@@ -1,0 +1,149 @@
+[
+    {
+        "id": "54b2212132f8363c",
+        "type": "split",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 290,
+        "y": 600,
+        "wires": [
+            [
+                "b8b6fe1db655b608"
+            ]
+        ]
+    },
+    {
+        "id": "39977aa80409a09d",
+        "type": "inject",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "Insert",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[{\"username\":\"superUser\",\"displayName\":\"Üst Yetkili Kullanıcı\",\"email\":\"superUser@paper-x.com\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"superUser\"]},{\"username\":\"admin\",\"displayName\":\"Yetkili Kullanıcı\",\"email\":\"admin@paper-x.com\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"admin\"]},{\"username\":\"student\",\"displayName\":\"Öğrenci Kullanıcı\",\"email\":\"student@paper-x.com\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"student\"]},{\"username\":\"teacher\",\"displayName\":\"Öğretmen Kullanıcı\",\"email\":\"teacher@paper-x.com\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"teacher\"]},{\"username\":\"forgot\",\"displayName\":\"Unutkan Öğrenci Kullanıcı\",\"email\":\"forgot@paper-x.com\",\"password\":\"1q2w3e4r5t6y7u\",\"roles\":[\"forgot\"]}]",
+        "payloadType": "json",
+        "x": 150,
+        "y": 600,
+        "wires": [
+            [
+                "54b2212132f8363c"
+            ]
+        ]
+    },
+    {
+        "id": "b8b6fe1db655b608",
+        "type": "bcrypt",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "",
+        "action": "encrypt",
+        "field": "payload.password",
+        "hash": "payload",
+        "target": "payload",
+        "assignment": "replace",
+        "match": "match",
+        "outputs": 1,
+        "rounds": 10,
+        "x": 430,
+        "y": 600,
+        "wires": [
+            [
+                "325e396bb192862b"
+            ]
+        ]
+    },
+    {
+        "id": "325e396bb192862b",
+        "type": "function",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "query",
+        "func": "let stamp = {\n    createAt: new Date(),\n    username: \"system.user\",\n    email: \"\",\n    displayName: \"Sistem Kullanıcısı\",\n    ip: \"127.0.0.1\"\n}\nlet auth = [\n    {\n        name: \"system.user\",\n        access: [\"r\", \"w\"]\n    }\n]\nmsg.payload = [\n    {\n        username: msg.payload.username\n    },\n    {\n        $set: {...msg.payload, stamp, auth}\n    },\n    {\n        upsert: true\n    }\n]\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 600,
+        "wires": [
+            [
+                "0dacba82d0b38aa3"
+            ]
+        ]
+    },
+    {
+        "id": "0dacba82d0b38aa3",
+        "type": "mongodb4",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "clientNode": "da6360c8f119cb98",
+        "mode": "collection",
+        "collection": "Users",
+        "operation": "updateOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 730,
+        "y": 600,
+        "wires": [
+            [
+                "941a4eec3266c2e6"
+            ]
+        ]
+    },
+    {
+        "id": "941a4eec3266c2e6",
+        "type": "debug",
+        "z": "60cd56e29d46ec42",
+        "g": "5873ddfaaffdc360",
+        "name": "Insert Data Of Users",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 940,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "da6360c8f119cb98",
+        "type": "mongodb4-client",
+        "name": "Paperx DB",
+        "protocol": "mongodb",
+        "hostname": "127.0.0.1",
+        "port": "27017",
+        "dbName": "paperx",
+        "authSource": "",
+        "authMechanism": "DEFAULT",
+        "tls": false,
+        "tlsCAFile": "",
+        "tlsInsecure": false,
+        "uri": "",
+        "advanced": "",
+        "uriTabActive": "tab-uri-simple"
+    }
+]
